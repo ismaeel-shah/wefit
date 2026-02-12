@@ -1,0 +1,60 @@
+.filterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.iconWrapper {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.select, .dateInput {
+  padding: 0.5rem 2rem 0.5rem 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  background-color: white;
+  cursor: pointer;
+}
+
+.select:focus, .dateInput:focus {
+  outline: none;
+  border-color: var(--primary-green);
+}
+
+.resetBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+}
+
+.resetBtn:hover {
+  background-color: var(--bg-cream);
+  color: var(--danger);
+}

@@ -1,0 +1,40 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.new {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.contacted {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.interested {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.closed {
+  background-color: #DCFCE7;
+  color: #166534;
+  border: 1px solid #86EFAC;
+}
+
+.pending {
+  background-color: #F3F4F6;
+  color: #4B5563;
+}
+
+.future {
+  background-color: #E0E7FF;
+  color: #3730A3;
+}
