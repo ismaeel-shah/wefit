@@ -25,7 +25,7 @@ export default function LeadsPage() {
     phone: '',
     email: '',
     platform: 'whatsapp',
-    campaignId: 3,
+    campaign_id: 1, // Changed to match snake_case
     status: 'new',
     date: new Date().toISOString().split('T')[0],
     notes: ''
@@ -97,7 +97,7 @@ export default function LeadsPage() {
         phone: '',
         email: '',
         platform: 'whatsapp',
-        campaignId: 3,
+        campaign_id: 1,
         status: 'new',
         date: new Date().toISOString().split('T')[0],
         notes: ''
@@ -168,7 +168,7 @@ export default function LeadsPage() {
                     </td>
                     <td>{lead.phone}</td>
                     <td style={{textTransform: 'capitalize'}}>{lead.platform}</td>
-                    <td>{campaigns.find(c => c.id === lead.campaignId)?.name || 'Unknown'}</td>
+                    <td>{campaigns.find(c => c.id === lead.campaign_id)?.name || campaigns.find(c => c.id === lead.campaignId)?.name || 'Unknown'}</td>
                     <td>
                       <select 
                         value={lead.status}
