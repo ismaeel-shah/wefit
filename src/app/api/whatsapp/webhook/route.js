@@ -38,19 +38,23 @@ export async function POST(request) {
 
       console.log(`Received message from ${from}: ${text}`);
 
-      // 1. Find the lead in Supabase based on phone number
-      // Note: We might need to handle different phone number formats
+      // 1. Find the lead in Supabase
+      // Robust matching: strip non-digits from the incoming 'from' and search
+      const cleanFrom = from.replace(/\D/g, ''); 
+      
       const { data: lead, error: leadError } = await supabase
         .from('leads')
-        .select('id')
-        .or(`phone.like.%${from}%,phone.eq.${from}`)
-        .single();
+        .select('id, name')
+        .or(`phone.ilike.%${cleanFrom}%,phone.ilike.%${from}%`)
+        .limit(1)
+        .maybeSingle();
 
       if (leadError || !lead) {
-        console.error('Lead not found for phone:', from, leadError);
-        // We could create a new lead here if desired, but for now we ignore or log
-        return NextResponse.json({ status: 'lead_not_found' });
+        console.error('Lead not found for phone:', from, 'Clean:', cleanFrom, leadError);
+        return NextResponse.json({ status: 'lead_not_found', phone: from });
       }
+
+      console.log(`Matching lead found: ${lead.name} (ID: ${lead.id})`);
 
       // 2. Insert message into Supabase
       const { error: msgError } = await supabase
