@@ -98,9 +98,29 @@ export function DataProvider({ children }) {
     }
   };
 
-  const addMessage = async (leadId, text, sender = 'me') => {
+  const addMessage = async (leadId, text, sender = 'me', phone = null) => {
+    // 1. If sending from CRM, call WhatsApp API first
+    if (sender === 'me' && phone) {
+      try {
+        const response = await fetch('/api/whatsapp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: phone, text }),
+        });
+        const data = await response.json();
+        if (!data.success) {
+          console.error('WhatsApp Send Failed:', data.error);
+          alert('WhatsApp message failed to send. Check console.');
+          return;
+        }
+      } catch (err) {
+        console.error('WhatsApp API Error:', err);
+        return;
+      }
+    }
+
     const optimisticMsg = {
-      id: Date.now(), // Temp ID
+      id: Date.now(),
       lead_id: leadId,
       text,
       sender,
@@ -119,13 +139,13 @@ export function DataProvider({ children }) {
       .select();
 
     if (error) {
-      console.error('Error sending message:', error);
-    } else if (data) {
-      // Replace temp msg with real one (simplified logic here)
-      fetchData(); // Refresh to ensure sync
+      console.error('Error saving message:', error);
+    } else {
+      // Refresh to ensure everything is in sync
+      fetchData();
     }
 
-    // Update lead status if replied
+    // Update lead status if first contact
     if (sender === 'me') {
       const lead = leads.find(l => l.id === leadId);
       if (lead && lead.status === 'new') {

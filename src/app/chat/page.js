@@ -31,13 +31,9 @@ export default function ChatPage() {
     e.preventDefault();
     if (!inputText.trim() || !activeLeadId) return;
 
-    addMessage(activeLeadId, inputText, 'me');
+    // Send via WhatsApp and save to Supabase
+    addMessage(activeLeadId, inputText, 'me', activeLead.phone);
     setInputText('');
-    
-    // Simulate reply after 3 seconds
-    setTimeout(() => {
-      addMessage(activeLeadId, 'This is an automated reply simulation.', 'lead');
-    }, 3000);
   };
 
   return (

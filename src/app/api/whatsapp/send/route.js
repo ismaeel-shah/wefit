@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request) {
   try {
-    const { to, templateName = 'test_drive_crm', languageCode = 'en' } = await request.json();
+    const { to, text, templateName, languageCode = 'en' } = await request.json();
 
     if (!to) {
       return NextResponse.json({ error: 'Recipient phone number (to) is required' }, { status: 400 });
@@ -14,6 +14,24 @@ export async function POST(request) {
     // Clean the phone number (remove +, spaces, etc.)
     const cleanTo = to.replace(/\D/g, '');
 
+    let payload = {
+      messaging_product: 'whatsapp',
+      to: cleanTo,
+    };
+
+    if (templateName) {
+      payload.type = 'template';
+      payload.template = {
+        name: templateName,
+        language: { code: languageCode },
+      };
+    } else if (text) {
+      payload.type = 'text';
+      payload.text = { body: text };
+    } else {
+      return NextResponse.json({ error: 'Either text or templateName is required' }, { status: 400 });
+    }
+
     const response = await fetch(
       `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`,
       {
@@ -22,17 +40,7 @@ export async function POST(request) {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          messaging_product: 'whatsapp',
-          to: cleanTo,
-          type: 'template',
-          template: {
-            name: templateName,
-            language: {
-              code: languageCode,
-            },
-          },
-        }),
+        body: JSON.stringify(payload),
       }
     );
 
