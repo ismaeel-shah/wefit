@@ -5,7 +5,7 @@ import { useData } from '@/context/DataContext';
 import Header from '@/components/Header';
 import FilterBar from '@/components/FilterBar';
 import StatusBadge from '@/components/StatusBadge';
-import { Search, ChevronLeft, ChevronRight, Eye, MessageCircle } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Eye, MessageCircle, Plus, X } from 'lucide-react';
 import styles from './page.module.css';
 
 const ITEMS_PER_PAGE = 10;
@@ -18,6 +18,17 @@ export default function LeadsPage() {
     status: 'all',
     date: '',
     search: ''
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newLead, setNewLead] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    platform: 'whatsapp',
+    campaignId: 3,
+    status: 'new',
+    date: new Date().toISOString().split('T')[0],
+    notes: ''
   });
 
   const handleFilterChange = (key, value) => {
@@ -76,6 +87,27 @@ export default function LeadsPage() {
     }
   };
 
+  const handleAddLead = async (e) => {
+    e.preventDefault();
+    const res = await addLead(newLead);
+    if (res.success) {
+      setIsModalOpen(false);
+      setNewLead({
+        name: '',
+        phone: '',
+        email: '',
+        platform: 'whatsapp',
+        campaignId: 3,
+        status: 'new',
+        date: new Date().toISOString().split('T')[0],
+        notes: ''
+      });
+      alert('Lead added successfully! Now click the WhatsApp icon to test.');
+    } else {
+      alert('Error adding lead: ' + res.error.message);
+    }
+  };
+
   // Pagination Logic
   const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
   const paginatedLeads = filteredLeads.slice(
@@ -95,7 +127,12 @@ export default function LeadsPage() {
 
       <div className={styles.tableCard}>
         <div className={styles.tableHeader}>
-          <h3>All Leads ({filteredLeads.length})</h3>
+          <div className={styles.headerLeft}>
+            <h3>All Leads ({filteredLeads.length})</h3>
+            <button className={styles.addBtn} onClick={() => setIsModalOpen(true)}>
+              <Plus size={16} /> Add Test Lead
+            </button>
+          </div>
           <div className={styles.searchWrapper}>
             <Search size={16} className={styles.searchIcon} />
             <input 
@@ -191,6 +228,52 @@ export default function LeadsPage() {
           </div>
         )}
       </div>
+
+      {/* Basic Modal */}
+      {isModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3>Add Test Lead</h3>
+              <button className={styles.closeBtn} onClick={() => setIsModalOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleAddLead} className={styles.modalForm}>
+              <div className={styles.formGroup}>
+                <label>Name</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={newLead.name} 
+                  onChange={(e) => setNewLead({...newLead, name: e.target.value})}
+                  placeholder="e.g. Test User"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Phone (International Format)</label>
+                <input 
+                  type="text" 
+                  required 
+                  value={newLead.phone} 
+                  onChange={(e) => setNewLead({...newLead, phone: e.target.value})}
+                  placeholder="e.g. +923339786871"
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Email</label>
+                <input 
+                  type="email" 
+                  value={newLead.email} 
+                  onChange={(e) => setNewLead({...newLead, email: e.target.value})}
+                  placeholder="test@example.com"
+                />
+              </div>
+              <button type="submit" className={styles.submitBtn}>Save Lead</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

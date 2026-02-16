@@ -134,6 +134,21 @@ export function DataProvider({ children }) {
     }
   };
 
+  const addLead = async (leadData) => {
+    const { data, error } = await supabase
+      .from('leads')
+      .insert([leadData])
+      .select();
+
+    if (error) {
+      console.error('Error adding lead:', error);
+      return { success: false, error };
+    }
+
+    setLeads(prev => [data[0], ...prev]);
+    return { success: true, data: data[0] };
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
@@ -148,6 +163,7 @@ export function DataProvider({ children }) {
       loading,
       updateLeadStatus,
       addMessage,
+      addLead,
       logout,
       refreshData: fetchData
     }}>
