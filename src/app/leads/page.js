@@ -5,7 +5,7 @@ import { useData } from '@/context/DataContext';
 import Header from '@/components/Header';
 import FilterBar from '@/components/FilterBar';
 import StatusBadge from '@/components/StatusBadge';
-import { Search, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Eye, MessageCircle } from 'lucide-react';
 import styles from './page.module.css';
 
 const ITEMS_PER_PAGE = 10;
@@ -43,6 +43,38 @@ export default function LeadsPage() {
       return matchPlatform && matchStatus && matchDate && matchSearch;
     });
   }, [leads, filters]);
+
+  const handleSendWhatsApp = async (lead) => {
+    if (!window.confirm(`Send WhatsApp message to ${lead.name}?`)) return;
+
+    try {
+      const response = await fetch('/api/whatsapp/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: lead.phone,
+          templateName: 'test_drive_crm',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('WhatsApp message sent successfully!');
+        // Update status to 'contacted' if it was 'new'
+        if (lead.status === 'new') {
+          updateLeadStatus(lead.id, 'contacted');
+        }
+      } else {
+        alert('Error: ' + (data.error?.message || 'Failed to send message'));
+      }
+    } catch (error) {
+      console.error('Error sending WhatsApp:', error);
+      alert('Failed to connect to the server.');
+    }
+  };
 
   // Pagination Logic
   const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
@@ -118,6 +150,13 @@ export default function LeadsPage() {
                     <td>
                       <button className={styles.actionBtn} title="View Details">
                         <Eye size={18} />
+                      </button>
+                      <button 
+                        className={`${styles.actionBtn} ${styles.whatsappBtn}`} 
+                        title="Send WhatsApp"
+                        onClick={() => handleSendWhatsApp(lead)}
+                      >
+                        <MessageCircle size={18} />
                       </button>
                     </td>
                   </tr>

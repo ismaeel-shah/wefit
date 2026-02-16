@@ -108,6 +108,10 @@
   color: var(--primary-green);
 }
 
+.whatsappBtn:hover {
+  color: #25D366;
+}
+
 .pagination {
   display: flex;
   align-items: center;
