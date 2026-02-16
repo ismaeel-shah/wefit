@@ -11,7 +11,7 @@ import styles from './page.module.css';
 const ITEMS_PER_PAGE = 10;
 
 export default function LeadsPage() {
-  const { leads, campaigns, updateLeadStatus } = useData();
+  const { leads, campaigns, updateLeadStatus, addLead } = useData();
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     platform: 'all',
